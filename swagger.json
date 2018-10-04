@@ -1,0 +1,372 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "Web Services called by MS CRM Dynamics to send created and updated customer information to IBBA.  You can find documentations in\n  [Confluence Customers+Rest+API](https://confluence.degroof.be/display/DTS/Customers+Rest+API).\n\t\n  **Project** : CRM\n\t\n  **Job** : CRM_ws_R_Backend_Customers_v121",
+    "version" : "1.2.1",
+    "title" : "Customer Backend REST API",
+    "contact" : {
+      "email" : "v.harcq@degroofpetercam.com"
+    }
+  },
+  "host" : "{server}:8040",
+  "basePath" : "/services/v1.2.1",
+  "schemes" : [ "http" ],
+  "consumes" : [ "application/json" ],
+  "produces" : [ "application/json" ],
+  "security" : [ {
+    "Basic authentication" : [ ]
+  } ],
+  "paths" : {
+    "/backend/customers" : {
+      "post" : {
+        "summary" : "Create a customer in IBBA",
+        "consumes" : [ ],
+        "parameters" : [ {
+          "name" : "body",
+          "in" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/Customer"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Created.  TODO must change to 201"
+          },
+          "400" : {
+            "description" : "IBBA/Seagulls rejected the data"
+          }
+        }
+      }
+    },
+    "/backend/customers/{id}" : {
+      "get" : {
+        "summary" : "Read of a customer",
+        "description" : "Read a customer from the given ID",
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Status 200",
+            "schema" : {
+              "$ref" : "#/definitions/Customer"
+            }
+          },
+          "404" : {
+            "description" : "When the ID does not correspond to any customer",
+            "schema" : {
+              "$ref" : "#/definitions/Status"
+            }
+          }
+        }
+      },
+      "patch" : {
+        "summary" : "Update Customer in IBBA",
+        "consumes" : [ ],
+        "parameters" : [ {
+          "name" : "body",
+          "in" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/Customer"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Status 200",
+            "schema" : {
+              "$ref" : "#/definitions/Customer"
+            }
+          },
+          "400" : {
+            "description" : "Status 400"
+          }
+        }
+      },
+      "parameters" : [ {
+        "name" : "id",
+        "in" : "path",
+        "required" : true,
+        "type" : "string"
+      } ]
+    },
+    "/backend/customers/{id}/activate" : {
+      "put" : {
+        "summary" : "Activation of Customer",
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Status 200",
+            "schema" : {
+              "$ref" : "#/definitions/Status"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "summary" : "Desactivation of Customer",
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Status 200",
+            "schema" : {
+              "$ref" : "#/definitions/Status"
+            }
+          }
+        }
+      },
+      "parameters" : [ {
+        "name" : "id",
+        "in" : "path",
+        "required" : true,
+        "type" : "string"
+      } ]
+    }
+  },
+  "securityDefinitions" : {
+    "Basic authentication" : {
+      "type" : "basic"
+    }
+  },
+  "definitions" : {
+    "Address" : {
+      "type" : "object",
+      "required" : [ "city", "country", "shortAddress", "zipCode" ],
+      "properties" : {
+        "city" : {
+          "type" : "string"
+        },
+        "region" : {
+          "type" : "string"
+        },
+        "country" : {
+          "type" : "string"
+        },
+        "zipCode" : {
+          "type" : "string"
+        },
+        "shortAddress" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Status" : {
+      "type" : "object",
+      "properties" : {
+        "status" : {
+          "type" : "object",
+          "properties" : {
+            "code" : {
+              "type" : "integer",
+              "example" : 999
+            },
+            "detail" : {
+              "type" : "string",
+              "description" : "the full IBBA screen with backslash-n as separator\n\nthe full IBBA screen with backslash-n as separator\n\nthe full IBBA screen with backslash-n as separator\n\nthe full IBBA screen with \\n as separator"
+            },
+            "details" : {
+              "$ref" : "#/definitions/StatusDetail"
+            },
+            "message" : {
+              "type" : "string",
+              "example" : "JSON Error Code=... : JSON : { ... }"
+            }
+          }
+        }
+      }
+    },
+    "StatusDetail" : {
+      "type" : "object",
+      "properties" : {
+        "line" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "Customer" : {
+      "type" : "object",
+      "required" : [ "code" ],
+      "properties" : {
+        "code" : {
+          "type" : "string",
+          "example" : "HARCQ*VINCENT30"
+        },
+        "type" : {
+          "type" : "string",
+          "enum" : [ "PP", "PM" ]
+        },
+        "mifid" : {
+          "type" : "string"
+        },
+        "address" : {
+          "$ref" : "#/definitions/Address"
+        },
+        "language" : {
+          "type" : "string",
+          "enum" : [ "NL", "FR" ]
+        },
+        "lifestage" : {
+          "type" : "string",
+          "example" : "0002"
+        },
+        "vatNumber" : {
+          "type" : "string",
+          "example" : "444333222"
+        },
+        "agencyCode" : {
+          "type" : "string",
+          "example" : "DEGROOF*BRUXELL"
+        },
+        "qualReason" : {
+          "type" : "string",
+          "example" : "0001"
+        },
+        "shortName1" : {
+          "type" : "string",
+          "example" : "VHARCQ"
+        },
+        "shortName2" : {
+          "type" : "string"
+        },
+        "moralPerson" : {
+          "$ref" : "#/definitions/MoralPerson"
+        },
+        "nationality" : {
+          "type" : "string",
+          "enum" : [ "GB", "BE" ]
+        },
+        "shippingRule" : {
+          "type" : "string",
+          "example" : "0001"
+        },
+        "physicalPerson" : {
+          "$ref" : "#/definitions/PhysicalPerson"
+        },
+        "enterpriseNumber" : {
+          "type" : "string",
+          "example" : "R  0000000097"
+        },
+        "registreCommerce" : {
+          "type" : "string",
+          "example" : "000123"
+        }
+      }
+    },
+    "PhysicalPerson" : {
+      "type" : "object",
+      "properties" : {
+        "gender" : {
+          "type" : "string"
+        },
+        "document" : {
+          "type" : "object",
+          "properties" : {
+            "type" : {
+              "type" : "string"
+            },
+            "number" : {
+              "type" : "string"
+            },
+            "issuedBy" : {
+              "type" : "string"
+            },
+            "issuedOn" : {
+              "type" : "string",
+              "pattern" : "dd/MM/yyyy"
+            },
+            "expiryDate" : {
+              "type" : "string",
+              "pattern" : "dd/MM/yyyy"
+            }
+          }
+        },
+        "lastName" : {
+          "type" : "string"
+        },
+        "birthDate" : {
+          "type" : "string",
+          "pattern" : "dd/MM/yyyy"
+        },
+        "deathDate" : {
+          "type" : "string",
+          "pattern" : "dd/MM/yyyy"
+        },
+        "birthPlace" : {
+          "type" : "string"
+        },
+        "givenName1" : {
+          "type" : "string"
+        },
+        "givenName2" : {
+          "type" : "string"
+        },
+        "givenName3" : {
+          "type" : "string"
+        },
+        "typeMariage" : {
+          "type" : "string"
+        },
+        "birthCountry" : {
+          "type" : "string"
+        },
+        "familyStatus" : {
+          "type" : "string"
+        },
+        "nationalRegisterNumber" : {
+          "type" : "string"
+        }
+      }
+    },
+    "MoralPerson" : {
+      "type" : "object",
+      "required" : [ "shortNameCompany1" ],
+      "properties" : {
+        "residualEntity" : {
+          "type" : "string",
+          "example" : "0001"
+        },
+        "balanceSheetDate" : {
+          "type" : "string",
+          "pattern" : "dd/MM/yyyy"
+        },
+        "constitutionDate" : {
+          "type" : "string",
+          "pattern" : "dd/MM/yyyy"
+        },
+        "shortNameCompany1" : {
+          "type" : "string",
+          "example" : "AUDAXIS"
+        },
+        "shortNameCompany2" : {
+          "type" : "string"
+        },
+        "generalAssembleeDate" : {
+          "type" : "string",
+          "pattern" : "dd/MM/yyyy"
+        }
+      }
+    },
+    "Company" : {
+      "type" : "object",
+      "properties" : {
+        "code" : {
+          "type" : "string",
+          "example" : "S123456"
+        },
+        "name" : {
+          "type" : "string",
+          "example" : "Audaxis S.A."
+        },
+        "Address" : {
+          "$ref" : "#/definitions/Address"
+        },
+        "vatCode" : {
+          "type" : "string",
+          "example" : "BE 444 555 666"
+        }
+      }
+    }
+  }
+}
